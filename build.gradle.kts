@@ -35,6 +35,8 @@ dependencies {
 	implementation("com.h2database:h2") // or your DB driver
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.springframework.security:spring-security-crypto:6.2.1") // or latest version
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+
 
 
 

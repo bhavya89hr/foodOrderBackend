@@ -1,14 +1,14 @@
 package com.backend.foodorder.model
 
 import jakarta.persistence.*
+import org.springframework.data.mongodb.core.mapping.Document
+import java.time.LocalDateTime
 
-@Entity
+@Document(collection = "food_items")
 data class FoodItem(
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id:Long?=null,
-    val name:String="",
-    val price:Double=0.0,
-    val photoUrl:String=""
+    @Id val id: String? = null,
+    val name: String,
+    val price: Double,
+    val imageUrl: String,
+    val createdAt: LocalDateTime = LocalDateTime.now()
 )

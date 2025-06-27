@@ -14,7 +14,6 @@ class FoodItemController(
     private val service: FoodItemService
 ) {
 
-    // Accepts multipart form data: name, price, photo
     @PostMapping(consumes = ["multipart/form-data"])
     fun addFoodItem(
         @RequestParam name: String,

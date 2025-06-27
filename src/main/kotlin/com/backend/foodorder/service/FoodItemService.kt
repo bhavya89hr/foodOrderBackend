@@ -6,40 +6,51 @@ import com.backend.foodorder.repository.FoodItemRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 
 
 
 @Service
 class FoodItemService(
-    private val foodItemRepository: FoodItemRepository
+    private val repo: FoodItemRepository
 ) {
 
     fun addFoodItemWithPhoto(name: String, price: Double, photo: MultipartFile): FoodItemResponse {
-        // 1. Create uploads directory inside user's home folder
-        val uploadsDir = File(System.getProperty("user.home"), "food-uploads")
-        if (!uploadsDir.exists()) uploadsDir.mkdirs()
-
-        // 2. Save file to the directory
-        val fileName = "${UUID.randomUUID()}_${photo.originalFilename}"
-        val file = File(uploadsDir, fileName)
-        photo.transferTo(file)
-
-        // 3. Save food item to the database
-        val saved = foodItemRepository.save(
+        val imageUrl = saveImage(photo) // You implement this
+        val savedItem = repo.save(
             FoodItem(
                 name = name,
                 price = price,
-                photoUrl = "/uploads/$fileName"
+                imageUrl = imageUrl
             )
         )
-
-        return FoodItemResponse(saved.id!!, saved.name, saved.price, saved.photoUrl)
+        return toResponse(savedItem)
     }
 
     fun listAllFoodItems(): List<FoodItemResponse> {
-        return foodItemRepository.findAll().map {
-            FoodItemResponse(it.id!!, it.name, it.price, it.photoUrl)
-        }
+        return repo.findAll().map { toResponse(it) }
+    }
+
+    private fun toResponse(item: FoodItem): FoodItemResponse {
+        return FoodItemResponse(
+            id = item.id,
+            name = item.name,
+            price = item.price,
+            imageUrl = item.imageUrl
+        )
+    }
+
+    private fun saveImage(photo: MultipartFile): String {
+        // Save to local / upload to Firebase, then return the URL
+        val fileName = UUID.randomUUID().toString() + "_" + photo.originalFilename
+        val uploadDir = Paths.get("uploads")
+        Files.createDirectories(uploadDir)
+        val path = uploadDir.resolve(fileName)
+        photo.transferTo(path)
+
+        // In real apps, return public URL (Firebase S3 etc.)
+        return "http://localhost:8080/uploads/$fileName"
     }
 }

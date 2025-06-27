@@ -1,8 +1,8 @@
 package com.backend.foodorder.model
 
 data class FoodItemResponse(
-    val id: Long,
+    val id: String?,
     val name: String,
     val price: Double,
-    val photoUrl: String
+    val imageUrl: String
 )
